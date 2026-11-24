@@ -1,0 +1,17 @@
++Flota · Subastas de transporte
+
+PARA MOSTRAR LA WEB
+Descomprimí toda la carpeta y abrí index.html. La demo permite explorar las seis unidades, ampliar las imágenes y hacer ofertas con un perfil de prueba. Las operaciones se guardan en ese navegador. En GitHub Pages agregá ?demo a la dirección para abrir esta modalidad.
+
+PARA PROBAR ENTRE DOS DISPOSITIVOS
+Instalá Node.js 24 LTS. En Windows, abrí iniciar.cmd. En macOS/Linux, desde la carpeta ejecutá MARTILLERO_CLAVE='tu-clave-privada' node server.mjs.
+En la computadora entrá a http://localhost:3000. Desde otro equipo de la misma red entrá a http://IP-DE-LA-COMPUTADORA:3000. El firewall debe permitir ese puerto en la red privada.
+Cada comprador crea su cuenta en Ingresar > Crear cuenta. Las ofertas se actualizan cada tres segundos. El servidor registra la hora y valida el importe y el cierre. SQLite conserva el historial, los usuarios y los plazos entre reinicios. La base se crea junto al servidor y requiere permisos de escritura.
+Para operar el remate entrá a /#martillero. Seleccioná el lote y la acción, ingresá la clave privada y confirmá. Abrir habilita el lote durante dos horas y conserva el historial previo.
+En la demo local también podés probar el panel agregando #martillero a index.html.
+
+PUBLICACIÓN
+El modo compartido requiere hosting con proceso Node.js persistente y almacenamiento duradero, una sola instancia y HTTPS. El hosting estático sirve la demo. Configurá MARTILLERO_CLAVE, HTTPS_ONLY=1 y PORT en el entorno del servidor, y respaldá SQLite.
+El catálogo ilustrativo se define en app.js y los importes y horarios iniciales en server.mjs. La carga inicial se aplica al crear la base. Reemplazá las fichas de muestra y cargá las condiciones y la matrícula verificadas antes de operar con compradores reales. La asignación de ganadores, pagos y transferencia de unidades se gestionan fuera de esta versión.
+
+Diseñado por NG Software
