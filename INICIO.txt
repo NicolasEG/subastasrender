@@ -1,7 +1,7 @@
 +Flota · Subastas de transporte
 
 PARA MOSTRAR LA WEB
-Descomprimí toda la carpeta y abrí index.html. La demo permite explorar las seis unidades, ampliar las imágenes y hacer ofertas con un perfil de prueba. Las operaciones se guardan en ese navegador. En GitHub Pages agregá ?demo a la dirección para abrir esta modalidad.
+Descomprimí toda la carpeta y abrí index.html. La demo permite explorar las seis unidades, ampliar las imágenes y hacer ofertas con un perfil de prueba. Las operaciones se guardan en ese navegador. En GitHub Pages la portada abre directamente en esta modalidad.
 
 PARA PROBAR ENTRE DOS DISPOSITIVOS
 Instalá Node.js 24 LTS. En Windows, abrí iniciar.cmd. En macOS/Linux, desde la carpeta ejecutá MARTILLERO_CLAVE='tu-clave-privada' node server.mjs.

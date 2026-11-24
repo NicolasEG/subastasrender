@@ -18,7 +18,7 @@ const wa='https://wa.me/5492494028887';
 const mapa='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('Ruta Nacional 226 km 299, Olavarría, Buenos Aires, Argentina');
 const money=n=>'$ '+n.toLocaleString('es-AR'), img=n=>'assets/'+n+'.webp', lotNo=i=>String(i+8).padStart(2,'0');
 const fmt=t=>new Date(t).toLocaleString('es-AR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-const demo=location.protocol==='file:'||location.search==='?demo', key='masflota-demo-2';
+const demo=location.protocol==='file:'||location.hostname.endsWith('.github.io')||new URLSearchParams(location.search).has('demo'), key='masflota-demo-2';
 let state, offset=0, filter='Todas',photo=0,lastRoute='',busy=false,requestSeq=0;
 const route=()=>location.hash.slice(1)||'inicio';
 const id=()=>Number(route().split('/')[1]);
