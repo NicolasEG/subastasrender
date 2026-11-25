@@ -1,3 +1,4 @@
+import {install} from './operaciones.mjs';
 import http from 'node:http';
 import {DatabaseSync} from 'node:sqlite';
 import {randomBytes,scryptSync,timingSafeEqual,createHash} from 'node:crypto';
@@ -16,19 +17,20 @@ for(const [i,p] of [82000000,21000000,38000000,61000000,48500000,34500000].entri
 }
 const fail=(msg,status=400)=>{throw Object.assign(new Error(msg),{status})};
 const sha=s=>createHash('sha256').update(s).digest('hex');
+const ops=install(db,fail);
 const attempts=new Map();
 http.createServer(async(req,res)=>{
  function json(data,status=200){res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))}
  try{
  const path=new URL(req.url,'http://localhost').pathname;
  if(!path.startsWith('/api/')){
- if(!/^\/(?:index\.html|app\.js|estilos\.css|assets\/[a-z0-9-]+\.webp)?$/.test(path))return fail('Recurso inexistente',404);
+ if(!/^\/(?:index\.html|portal\.js|portal\.css|panel\.js|app\.js|estilos\.css|assets\/[a-z0-9-]+\.(?:webp|png))?$/.test(path))return fail('Recurso inexistente',404);
  const name=path==='/'?'index.html':path.slice(1);
  const bytes=await readFile(new URL(name,import.meta.url));
- res.writeHead(200,{'Content-Type':({'html':'text/html; charset=utf-8','css':'text/css','js':'text/javascript','webp':'image/webp'})[name.split('.').pop()]});return res.end(bytes)}
+ res.writeHead(200,{'Content-Type':({'html':'text/html; charset=utf-8','css':'text/css','js':'text/javascript','png':'image/png','webp':'image/webp'})[name.split('.').pop()]});return res.end(bytes)}
  const token=(req.headers.cookie||'').match(/(?:^|; )flota=([a-f0-9]{64})(?:;|$)/)?.[1]||'';
  const user=db.prepare('SELECT u.id,u.email FROM sessions s JOIN users u ON u.id=s.uid WHERE token=? AND expires>?').get(sha(token),Date.now());
- if(req.method==='GET'&&path==='/api/state')return json({time:Date.now(),user:user||null,lots:db.prepare('SELECT * FROM lots ORDER BY id').all(),bids:db.prepare('SELECT lot,uid,amount,time FROM bids ORDER BY id DESC LIMIT 400').all()});
+ if(req.method==='GET'&&path==='/api/state')return json({time:Date.now(),user:user||null,admissions:user?ops.mine(user.id):[],config:ops.config,lots:db.prepare('SELECT * FROM lots ORDER BY id').all(),bids:db.prepare('SELECT lot,uid,amount,time,channel FROM bids ORDER BY id DESC LIMIT 400').all()});
  if(req.method!=='POST'||!req.headers['content-type']?.startsWith('application/json'))return fail('Solicitud inválida',405);
  if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return fail('Origen inválido',403);
  let body='';for await(const chunk of req){body+=chunk;if(body.length>8192)fail('Solicitud demasiado grande',413)}let d;try{d=JSON.parse(body)}catch{fail('Datos inválidos')}
@@ -46,11 +48,7 @@ http.createServer(async(req,res)=>{
  if(path==='/api/manage'){if(!process.env.MARTILLERO_CLAVE||sha(String(d.key))!==sha(process.env.MARTILLERO_CLAVE))fail('Clave de operador incorrecta.',403);
  if(!Number.isInteger(d.lot)||!['abrir','cerrar'].includes(d.action))fail('Operación inválida');
  const t=Date.now();if(d.action==='abrir')db.prepare('UPDATE lots SET starts=?,ends=? WHERE id=?').run(t,t+7200000,d.lot);else db.prepare('UPDATE lots SET starts=MIN(starts,?),ends=? WHERE id=?').run(t,t,d.lot);return json({ok:true})}
- if(path==='/api/bid'){if(!user)fail('Ingresá para ofertar.',401);
- db.exec('BEGIN IMMEDIATE');try{const l=db.prepare('SELECT * FROM lots WHERE id=?').get(d.lot),t=Date.now();
- if(!l||t<l.starts||t>=l.ends)fail('El lote está fuera de horario.',409);
- if(d.amount!==l.price+l.step)fail('Cambió la oferta. Revisá el nuevo importe.',409);
- db.prepare('INSERT INTO bids(lot,uid,amount,time) VALUES(?,?,?,?)').run(l.id,user.id,d.amount,t);db.prepare('UPDATE lots SET price=? WHERE id=?').run(d.amount,l.id);db.exec('COMMIT')}catch(e){db.exec('ROLLBACK');throw e}return json({ok:true})}
+ const result=ops.handle(path.slice(5),d,user);if(result)return json(result);
  fail('Página inexistente',404)
  }catch(e){json({error:e.status?e.message:'No se pudo completar la operación.'},e.status||500)}
 }).listen(Number(process.env.PORT||3000),()=>console.log('+Flota disponible en http://localhost:'+(process.env.PORT||3000)));

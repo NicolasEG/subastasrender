@@ -15,3 +15,9 @@ El modo compartido requiere hosting con proceso Node.js persistente y almacenami
 El catálogo ilustrativo se define en app.js y los importes y horarios iniciales en server.mjs. La carga inicial se aplica al crear la base. Reemplazá las fichas de muestra y cargá las condiciones y la matrícula verificadas antes de operar con compradores reales. La asignación de ganadores, pagos y transferencia de unidades se gestionan fuera de esta versión.
 
 Diseñado por NG Software
+MESA DE SUBASTAS
+Acceso desde el pie > Administración. En GitHub Pages funciona con datos de ejemplo en el navegador. Para ofertas compartidas usar iniciar.cmd y el servidor Node incluido.
+Desde Administración > Configurar medios y anticipo, indicar el monto en pesos y el titular, CUIT y alias/CBU/CVU reales de cada medio. Una cuenta vacía desactiva el medio. El servidor nuevo arranca sin cuentas de cobro. Opcionalmente se puede inicializar con ANTICIPO_ARS, MP_DESTINO y MACRO_DESTINO.
+El comprador se inscribe por lote e informa la referencia de la transferencia. El operador revisa sus datos y coteja la transferencia con el movimiento real de la cuenta antes de acreditarla. Ambas aprobaciones son necesarias.
+WhatsApp asistido: el cliente habilitado genera un código para un importe exacto y lo envía al WhatsApp de Prado. El operador coteja el mensaje y registra el código recibido desde el panel. La prioridad corresponde a la aceptación del servidor, no a la hora del mensaje. Los códigos vencen al cambiar el importe, al cierre o al cabo de cinco minutos.
+Los nombres de los proveedores y sus iconos identifican los medios previstos. No hay integración bancaria automática. La matrícula, el mandato del vendedor, las condiciones aprobadas, honorarios y la información fiscal del responsable deberán completarse antes del primer remate vinculante.
